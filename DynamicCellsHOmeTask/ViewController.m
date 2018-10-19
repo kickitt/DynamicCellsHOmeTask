@@ -20,6 +20,8 @@ typedef enum {
 @interface ViewController ()
 
 @property (strong, nonatomic) NSMutableArray* array;
+@property (strong, nonatomic) NSMutableDictionary* sortedStudents;
+@property (strong, nonatomic) NSArray* arrayOfGroups;
 @property (strong, nonatomic) TestClass* object;
 
 @end
@@ -30,15 +32,35 @@ typedef enum {
     [super viewDidLoad];
     
     self.array = [NSMutableArray array];
-    
+    self.sortedStudents = [NSMutableDictionary dictionary];
+    self.arrayOfGroups = [NSArray arrayWithObjects: @"Best", @"Good", @"Setisfied", @"Bad", nil];
     for (int i = 0; i <= 30; i++) {
         TestClass* object = [[TestClass alloc] init];
         object.color = [UIColor blackColor];
         object.name = [self randomName];
         object.mark = [self randomMiddleMark];
-        [self.array addObject:object];
+        
+        if (self.object.mark == 5) {
+        
+            [self.array addObject:object];
+            [self.sortedStudents setObject:self.array forKey:@"best"];
 
+        } else if (self.object.mark == 4) {
+            
+            [self.array addObject:object];
+            [self.sortedStudents setObject:self.array forKey:@"good"];
+
+        } else if (self.object.mark == 4){
+            [self.array addObject:object];
+            [self.sortedStudents setObject:self.array forKey:@"satisfied"];
+
+        } else {
+            [self.array addObject:object];
+            [self.sortedStudents setObject:self.array forKey:@"bad"];
+        }
     }
+    
+    NSLog(@"%@, for key %@", _sortedStudents, _sortedStudents.allKeys);
     
 }
 
@@ -46,9 +68,15 @@ typedef enum {
 
 #pragma mark - UITableViewDataSource
 
+- (nullable NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+    
+    NSString* group = [self.arrayOfGroups objectAtIndex:section];
+    return group;
+}
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 2;
+
+    return [self.arrayOfGroups count];
 }
 
 
@@ -67,7 +95,13 @@ typedef enum {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:identifier];
     }
 
+    NSString* group = [self.arrayOfGroups objectAtIndex:indexPath.section];
+    
+    
     self.object = [self.array objectAtIndex:indexPath.row];
+    
+    
+    
     cell.textLabel.text = [NSString stringWithFormat:@"%@", self.object.name];
     
     if (self.object.mark < 4) {

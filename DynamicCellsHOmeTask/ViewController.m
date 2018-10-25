@@ -10,12 +10,6 @@
 #import "TestClass.h"
 
 
-typedef enum {
-    best,
-    good,
-    setisfied,
-    bad
-} Groups;
 
 @interface ViewController ()
 
@@ -32,35 +26,14 @@ typedef enum {
     [super viewDidLoad];
     
     self.array = [NSMutableArray array];
-    self.sortedStudents = [NSMutableDictionary dictionary];
     self.arrayOfGroups = [NSArray arrayWithObjects: @"Best", @"Good", @"Setisfied", @"Bad", nil];
-    for (int i = 0; i <= 30; i++) {
+    for (int i = 0; i < 30; i++) {
         TestClass* object = [[TestClass alloc] init];
         object.color = [UIColor blackColor];
         object.name = [self randomName];
         object.mark = [self randomMiddleMark];
-        
-        if (self.object.mark == 5) {
-        
-            [self.array addObject:object];
-            [self.sortedStudents setObject:self.array forKey:@"best"];
-
-        } else if (self.object.mark == 4) {
-            
-            [self.array addObject:object];
-            [self.sortedStudents setObject:self.array forKey:@"good"];
-
-        } else if (self.object.mark == 4){
-            [self.array addObject:object];
-            [self.sortedStudents setObject:self.array forKey:@"satisfied"];
-
-        } else {
-            [self.array addObject:object];
-            [self.sortedStudents setObject:self.array forKey:@"bad"];
-        }
+        [self.array addObject:object];
     }
-    
-    NSLog(@"%@, for key %@", _sortedStudents, _sortedStudents.allKeys);
     
 }
 
@@ -68,23 +41,32 @@ typedef enum {
 
 #pragma mark - UITableViewDataSource
 
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    
+    NSLog(@"numberOfSectionsInTableView %d", (int)[self.arrayOfGroups count]);
+   
+    return [self.arrayOfGroups count];
+}  //сколько секций
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+   
+    NSString* groupName = [self.arrayOfGroups objectAtIndex:section];
+    
+    NSArray* groupOfObjects = [[self parsingOfArrayByValue] objectForKey:groupName];
+    
+    return [groupOfObjects count];
+    
+} //сколько строк в секции ()
+
 - (nullable NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     
     NSString* group = [self.arrayOfGroups objectAtIndex:section];
+    NSLog(@"titleForHeaderInSection %@  for section %d", group, (int)section);
     return group;
-}
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-
-    return [self.arrayOfGroups count];
-}
+}//название хэдэров секций
 
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    
-    return [self.array count];
-    
-}
+
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
@@ -94,44 +76,32 @@ typedef enum {
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:identifier];
     }
+    
+    
+    NSString* groupName = [self.arrayOfGroups objectAtIndex:indexPath.section];
+    
+    NSArray* groupOfObjects = [[self parsingOfArrayByValue] objectForKey:groupName];
 
-    NSString* group = [self.arrayOfGroups objectAtIndex:indexPath.section];
+    TestClass* object = [groupOfObjects objectAtIndex:indexPath.row];
     
+    NSString* objectName = object.name;
     
-    self.object = [self.array objectAtIndex:indexPath.row];
-    
-    
-    
-    cell.textLabel.text = [NSString stringWithFormat:@"%@", self.object.name];
-    
-    if (self.object.mark < 4) {
+    NSLog(@"Object name for section %d and raw %d is %@", (int)indexPath.section, (int) indexPath.row, objectName);
+    cell.textLabel.text = objectName;
+   
+    if (object.mark < 4) {
         cell.textLabel.textColor = [UIColor redColor];
     } else {
-        cell.textLabel.textColor = self.object.color;
+        cell.textLabel.textColor = object.color;
     }
-    cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (long)self.object.mark];
+    cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (long)object.mark];
     
     
 return cell;
 
     
-}
-/*
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    static NSString* identifier = @"Cell";
-    UITableViewCell* cell =[tableView dequeueReusableCellWithIdentifier:identifier];
-    if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
-    }
-    UIColor* color = [self randomColor];
-    
-    cell.textLabel.text = [NSString stringWithFormat:@"(%.2f)", [color description]];
-    cell.textLabel.textColor = color;
-    
-    return cell;
-}
-*/
+} // отрисовка таблицы
+
 
 #pragma mark - Private Methods
 
@@ -174,5 +144,40 @@ return cell;
     
     return mark;
 }
+
+- (NSMutableDictionary *) parsingOfArrayByValue{
+    
+    NSMutableArray* arrayWithBest = [[NSMutableArray alloc] init];
+    NSMutableArray* arrayWithGood = [[NSMutableArray alloc] init];
+    NSMutableArray* arrayWithSetisfied = [[NSMutableArray alloc] init];
+    NSMutableArray* arrayWithBad = [[NSMutableArray alloc] init];
+    
+    
+    for (TestClass* obj in self.array) {
+        if (obj.mark == 5) {
+            [arrayWithBest addObject:obj];
+        }
+        if (obj.mark == 4) {
+            [arrayWithGood addObject:obj];
+        }
+        if (obj.mark == 3) {
+            [arrayWithSetisfied addObject:obj];
+        }
+        if (obj.mark == 2) {
+            [arrayWithBad addObject:obj];
+        }
+    }
+    
+    NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
+    
+    [dict setObject:arrayWithBest forKey:@"Best"];
+    [dict setObject:arrayWithGood forKey:@"Good"];
+    [dict setObject:arrayWithSetisfied forKey:@"Setisfied"];
+    [dict setObject:arrayWithBad forKey:@"Bad"];
+    
+    
+    return dict;
+}
+
 
 @end

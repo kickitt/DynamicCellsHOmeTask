@@ -14,7 +14,6 @@
 @interface ViewController ()
 
 @property (strong, nonatomic) NSMutableArray* array;
-@property (strong, nonatomic) NSMutableDictionary* sortedStudents;
 @property (strong, nonatomic) NSArray* arrayOfGroups;
 @property (strong, nonatomic) TestClass* object;
 
@@ -65,9 +64,6 @@
     return group;
 }//название хэдэров секций
 
-
-
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
     
@@ -101,7 +97,6 @@ return cell;
 
     
 } // отрисовка таблицы
-
 
 #pragma mark - Private Methods
 
